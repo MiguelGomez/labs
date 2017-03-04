@@ -1,0 +1,272 @@
+
+;------------------------------------------------------------------
+;    Imprime una cadena   //   echo  cadena
+;------------------------------------------------------------------
+echo  macro string
+              push dx
+              push ax
+             mov ah,09
+             lea dx,string
+              int 21h
+              pop dx
+              pop ax
+endm
+
+
+;------------------------------------------------------------------
+;    Imprime una cadena rapidamente  // fastecho
+;------------------------------------------------------------------
+fastecho  macro string
+                 lea dx,string
+                  int 21h
+endm
+
+;------------------------------------------------------------------
+;  Imprime un cuadro de vacios en pantalla //  negro x1, y1, x2, y2
+;------------------------------------------------------------------
+negro macro x1,y1,x2,y2
+    push ax
+    push bx
+    push cx
+    push dx
+
+    mov ax,0600h
+    mov bh,7
+    mov ch,y1
+    mov cl,x1
+    mov dh,y2
+    mov dl,x2
+    int 10h
+
+    pop dx
+    pop cx
+    pop bx
+    pop ax
+endm
+
+
+;------------------------------------------------------------------
+;   Obtener caracter de teclado
+;------------------------------------------------------------------
+
+getch macro
+   ; push ax
+    mov ah,10h
+    int 16h
+   ; pop ax
+endm
+
+
+;------------------------------------------------------------------
+;   Limpiar terminal
+;------------------------------------------------------------------
+
+clear macro
+	push ax
+	push bx
+	push cx
+	push dx
+	mov ah,6
+	xor	cx,cx
+	mov dx,184Fh
+	mov al,0
+	mov bh,7
+	int 10h
+	pop dx
+	pop cx
+	pop bx
+	pop ax
+endm
+
+;------------------------------------------------------------------
+;   Pinta de gris el caracter de AL
+;------------------------------------------------------------------
+rojo  macro car
+  push ax
+  push bx
+  push cx
+  mov ah,09h
+  mov al,car   
+  mov bl,08h
+  mov cx,1
+  int 10h
+  pop cx
+  pop bx
+  pop ax
+ endm
+
+
+;------------------------------------------------------------------
+;   Pinta de rojo el caracter de AL
+;------------------------------------------------------------------
+gris macro car
+  push ax
+  push bx
+  push cx
+  mov ah,09h
+  mov al,car   
+  mov bl,04h
+  mov cx,1
+  int 10h
+  pop cx
+  pop bx
+  pop ax
+endm
+
+
+
+
+;------------------------------------------------------------------
+;   Posiciona el cursor en  ( x , y ) 
+;------------------------------------------------------------------
+cursor Macro x,y
+    push ax
+    push bx
+    push dx
+
+    mov ah,2
+    xor bh,bh
+    mov dh,y
+    mov dl,x
+    int 10h
+
+    pop dx
+    pop bx
+    pop ax
+endm
+
+
+
+;------------------------------------------------------------------
+;    Copiar cadena
+;------------------------------------------------------------------
+strcp macro string1,string2,tam,vi,vf
+local copiar,nocopiar
+push ax
+push cx
+push dx
+push di
+push si
+xor di,di
+xor si,si
+xor ch,ch
+mov cl,tam
+copiar:
+mov al,string1[si]
+cmp si,vi
+jl nocopiar
+cmp si,vf
+jg nocopiar
+mov string2[di],al
+inc di
+nocopiar:
+inc si
+loop copiar
+mov string2[di],'$'
+pop ax
+pop cx
+pop dx
+pop di
+pop si
+endm
+
+;------------------------------------------------------------------
+;    Limpiar cadena
+;------------------------------------------------------------------
+clean  macro  un,du
+         local copy
+	mov cl,du
+	xor di,di
+	copy:
+         	mov al,32
+	mov un[di],al
+	inc di
+	loop copy
+	mov un[di],'$'
+endm
+
+
+
+
+;------------------------------------------------------------------
+;    Capturar cadena de longitud definida 
+;------------------------------------------------------------------
+capcad macro string,tam
+	local main, fin, bks
+	push ax
+	push dx
+	push di
+	xor di,di
+main:
+	
+	mov ah,10h
+	int 16h
+	cmp al,13
+	je fin
+	cmp al,8
+	je bks
+	mov string[di],al
+	inc di
+	mov ah,02
+	mov dl,al
+	int 21h
+	cmp di,Tam
+	jl main
+	jmp fin
+bks:
+	cmp di,0
+	je main
+	sub di,1
+	mov string[di],' '
+	mov ah,02
+	mov dl,8
+	int 21h
+	mov dl,' '
+	int 21h
+	mov dl,8
+	int 21h
+	jmp main
+	mov ah,02h
+	int 10h
+fin:
+	pop di
+	pop dx
+	pop ax
+endm
+
+;------------------------------------------------------------------
+;    Capturar Decimal
+;------------------------------------------------------------------
+Decimal  macro
+         local  numeros,fin
+         xor ax,ax
+         xor dx,dx
+         numeros:
+         mov ah,10h
+	int 16h
+	cmp al,13
+	je fin
+	cmp al,48
+	jl numeros
+	cmp al,57
+         jg numeros
+         sub al,48
+         add dl,al
+         jmp numeros
+	fin:
+endm
+
+;------------------------------------------------------------------
+;    Desplegar Decimal
+;------------------------------------------------------------------
+echoDecimal  macro  var
+              push dx
+              push ax
+              mov ah,09
+              inc var
+              add var,48
+              lea dx,var
+              int 21h
+              pop dx
+              pop ax
+endm
