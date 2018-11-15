@@ -1,0 +1,7 @@
+organization=mikesourcecode-github
+projectKey=MikeSourceCode_labs
+serverUrl=https://sonarcloud.io
+serverVersion=7.5.0.19140
+dashboardUrl=https://sonarcloud.io/dashboard?id=MikeSourceCode_labs
+ceTaskId=AWcWdEYQZBOcJ_K_vqLF
+ceTaskUrl=https://sonarcloud.io/api/ce/task?id=AWcWdEYQZBOcJ_K_vqLF
